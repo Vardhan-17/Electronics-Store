@@ -6,6 +6,7 @@ import HeaderButton from "./HeaderButton";
 
 function Header() {
   const log = useContext(LoginContext);
+  console.log("header");
 
   let tags = (
     <React.Fragment>

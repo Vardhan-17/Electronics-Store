@@ -29,7 +29,6 @@ function CartProvider(props) {
   }, [log.email]);
 
   async function addToCartHandler(id) {
-    console.log(id);
     try {
       const response = await fetch("http://localhost:5000/api/user/cart", {
         method: "POST",
@@ -47,7 +46,30 @@ function CartProvider(props) {
         throw new Error("Couldn't add to cart");
       }
       setItems(responseData);
-      console.log(responseData);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function deleteFromCartHandler(id) {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/user/cart/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: log.email,
+          }),
+        }
+      );
+      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error("Couldn't delete from cart");
+      }
+      setItems(responseData);
     } catch (err) {
       console.log(err);
     }
@@ -61,13 +83,15 @@ function CartProvider(props) {
     setShowCart(false);
   }
 
-  const cart = {
+  let cart = {
     items,
     addToCartHandler,
+    deleteFromCartHandler,
     showCart,
     showCartHandler,
     closeCartHandler,
   };
+
 
   return (
     <CartContext.Provider value={cart}>{props.children}</CartContext.Provider>

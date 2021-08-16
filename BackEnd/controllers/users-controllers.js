@@ -65,33 +65,71 @@ const getCartItemsByUserId = async (req, res, next) => {
 const addCartItemsByUserId = async (req, res, next) => {
   const { email, productId, quantity } = req.body;
 
-  let item;
+  let user;
   try {
-    item = await User.find({ email });
+    user = await User.find({ email });
   } catch (err) {
     return next(new HttpError("Something went wrong", 500));
   }
 
-  let curItem = item[0].cart.filter((it) => {
+  let curItem = user[0].cart.filter((it) => {
     return it.productId.equals(productId);
   });
 
   if (!curItem || curItem.length === 0) {
-    item[0].cart.push({ productId, quantity });
+    user[0].cart.push({ productId, quantity });
   } else {
     curItem[0].quantity += +quantity;
   }
 
   try {
-    await item[0].save();
+    await user[0].save();
   } catch (err) {
     return next(new HttpError("Something went wrong", 500));
   }
 
-  res.json(item[0].cart);
+  res.json(user[0].cart);
+};
+
+const deleteCartItemById = async (req, res, next) => {
+  const productId = req.params.pid;
+
+  const { email } = req.body;
+
+  let user;
+  try {
+    user = await User.find({ email });
+  } catch (err) {
+    return next(new HttpError("Something went wrong", 500));
+  }
+  console.log(user);
+
+  let curItem;
+
+  for (let i = 0; i < user[0].cart.length; i++) {
+    if (user[0].cart[i].productId.equals(productId)) {
+      curItem = i;
+      break;
+    }
+  }
+
+  if (user[0].cart[curItem].quantity === 1) {
+    user[0].cart.splice(curItem, 1);
+  } else {
+    user[0].cart[curItem].quantity -= 1;
+  }
+
+  try {
+    user[0].save();
+  } catch (err) {
+    return next(new HttpError("Something went wrong", 500));
+  }
+
+  res.json(user[0].cart);
 };
 
 exports.addCartItemsByUserId = addCartItemsByUserId;
 exports.getCartItemsByUserId = getCartItemsByUserId;
+exports.deleteCartItemById = deleteCartItemById;
 exports.signinUserById = signinUserById;
 exports.loginUserById = loginUserById;

@@ -12,4 +12,6 @@ router.get("/cart/:uid", usersControllers.getCartItemsByUserId);
 
 router.post("/cart", usersControllers.addCartItemsByUserId);
 
+router.delete("/cart/:pid", usersControllers.deleteCartItemById);
+
 module.exports = router;

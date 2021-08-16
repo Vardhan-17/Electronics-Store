@@ -17,15 +17,13 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Headers",
     "Origin,X-Requested-With,Content-Type,Accept,Authorization"
   );
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE");
   next();
 });
 
 app.use("/api/products", productsRoutes);
 
 app.use("/api/user", usersRoutes);
-
-app.use("/api/orders", ordersRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError("Could not find this route.", 404);
@@ -48,5 +46,5 @@ mongoose
     app.listen(5000);
   })
   .catch((err) => {
-    console.log("Error");
+    console.log("\nError while connecting to the database",err.message);
   });
